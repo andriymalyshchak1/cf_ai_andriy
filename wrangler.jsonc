@@ -27,8 +27,9 @@
 		"bindings": [
 			{
 				"name": "CHAT_MEMORY",
-				"class_name": "ChatMemory",
-				"script_name": "chat-memory"
+				"class_name": "ChatMemory"
+				// Note: script_name removed - for Pages, DOs are configured in dashboard
+				// The chat-memory worker file exists for reference but must be deployed separately
 			}
 		]
 	}
