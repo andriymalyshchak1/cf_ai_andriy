@@ -6,7 +6,7 @@ An AI-powered chatbot application built on Cloudflare's platform, demonstrating 
 
 This project includes all required components:
 
-✅ **LLM**: Uses Llama 3.3 70B Instruct (recommended model) via Workers AI  
+✅ **LLM**: Uses Llama 3.1 8B Instruct via Workers AI (supports tool calling)  
 ✅ **Workflow/Coordination**: Implements Workers and service bindings for chat coordination  
 ✅ **User Input**: Chat interface via Cloudflare Pages  
 ✅ **Memory/State**: Persistent storage using KV namespaces and Durable Objects  
@@ -14,7 +14,7 @@ This project includes all required components:
 ## Tech Stack
 
 - **[Cloudflare Pages](https://pages.cloudflare.com)** – Frontend deployment and hosting
-- **[Cloudflare Workers AI](https://developers.cloudflare.com/workers-ai/)** – LLM inference using Llama 3.3 70B
+- **[Cloudflare Workers AI](https://developers.cloudflare.com/workers-ai/)** – LLM inference using Llama 3.1 8B Instruct
 - **[Cloudflare Workers](https://workers.cloudflare.com/)** – Serverless functions for coordination
 - **[Cloudflare KV](https://developers.cloudflare.com/kv/)** – Key-value storage for session management
 - **[Cloudflare Durable Objects](https://developers.cloudflare.com/durable-objects/)** – Persistent memory/state storage
@@ -28,9 +28,10 @@ This project includes all required components:
 ### Components
 
 1. **LLM (Workers AI)**
-   - Model: `@cf/meta/llama-3.3-70b-instruct-fp8-fast`
+   - Model: `@cf/meta/llama-3.1-8b-instruct` (widely available, supports tool calling)
    - Location: `app/api/chat/route.ts`
    - Provides AI-powered text generation
+   - Note: Using 3.1-8b instead of 3.3-70b for better availability and compatibility
 
 2. **Workflow/Coordination**
    - Chat Coordinator Worker: `workers/chat-coordinator.ts`
@@ -95,7 +96,7 @@ This project includes all required components:
 2. Open your browser to `http://localhost:8788`
 
 3. Start chatting! The application will:
-   - Use Llama 3.3 for AI responses
+   - Use Llama 3.1 for AI responses
    - Save conversation history to KV storage
    - Coordinate workflow via Workers
    - Persist state across sessions
@@ -255,7 +256,7 @@ The chatbot includes the following tools that extend its capabilities:
 ### Test LLM
 1. Open the chat interface
 2. Type a message and send
-3. Verify AI response appears (using Llama 3.3)
+3. Verify AI response appears (using Llama 3.1 8B Instruct)
 
 ### Test Memory/State
 1. Start a conversation

@@ -119,7 +119,7 @@ export async function POST(req: NextRequest) {
 
     try {
       const textStream = streamText({
-        model: workersai('@cf/meta/llama-3.3-70b-instruct-fp8-fast'),
+        model: workersai('@cf/meta/llama-3.1-8b-instruct'),
         messages: messages,
         tools: availableTools,
         maxSteps: 5, // Allow multiple tool calls in sequence
