@@ -6,8 +6,9 @@ export const runtime = 'edge'
 export async function POST(req: NextRequest) {
   try {
     const context = getRequestContext();
+    const envAny = context?.env as any;
     
-    if (!context?.env?.CHAT_SESSIONS) {
+    if (!envAny?.CHAT_SESSIONS) {
       return new Response(
         JSON.stringify({ error: 'Chat sessions storage not available' }),
         { status: 500, headers: { 'Content-Type': 'application/json' } }
@@ -17,7 +18,7 @@ export async function POST(req: NextRequest) {
     const sessionId = crypto.randomUUID();
     const timestamp = Date.now();
     
-    await context.env.CHAT_SESSIONS.put(
+    await envAny.CHAT_SESSIONS.put(
       `session:${sessionId}`,
       JSON.stringify({
         id: sessionId,
@@ -50,14 +51,15 @@ export async function GET(req: NextRequest) {
       return new Response('Session ID required', { status: 400 });
     }
     
-    if (!context?.env?.CHAT_SESSIONS) {
+    const envAny = context?.env as any;
+    if (!envAny?.CHAT_SESSIONS) {
       return new Response(
         JSON.stringify({ error: 'Chat sessions storage not available' }),
         { status: 500, headers: { 'Content-Type': 'application/json' } }
       );
     }
 
-    const session = await context.env.CHAT_SESSIONS.get(`session:${sessionId}`);
+    const session = await envAny.CHAT_SESSIONS.get(`session:${sessionId}`);
     
     if (!session) {
       return new Response('Session not found', { status: 404 });

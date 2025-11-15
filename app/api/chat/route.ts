@@ -27,9 +27,11 @@ export async function POST(req: NextRequest) {
     }
 
     // Save conversation to memory/state using KV
-    if (context.env.CHAT_SESSIONS) {
+    // Using type assertion for optional bindings that may not be in CloudflareEnv type
+    const envAny = context.env as any;
+    if (envAny.CHAT_SESSIONS) {
       try {
-        await context.env.CHAT_SESSIONS.put(
+        await envAny.CHAT_SESSIONS.put(
           `conversation:${sessionId}`,
           JSON.stringify({
             sessionId,
@@ -40,7 +42,7 @@ export async function POST(req: NextRequest) {
         );
 
         // Update session activity
-        await context.env.CHAT_SESSIONS.put(
+        await envAny.CHAT_SESSIONS.put(
           `session:${sessionId}`,
           JSON.stringify({
             id: sessionId,
@@ -56,9 +58,9 @@ export async function POST(req: NextRequest) {
     }
 
     // Coordinate workflow if service binding is available
-    if (context.env.CHAT_COORDINATOR) {
+    if (envAny.CHAT_COORDINATOR) {
       try {
-        await context.env.CHAT_COORDINATOR.fetch(
+        await envAny.CHAT_COORDINATOR.fetch(
           new Request(`${req.url.split('/api/chat')[0]}/api/chat/coordinate`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
