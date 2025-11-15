@@ -117,29 +117,62 @@ export async function POST(req: NextRequest) {
       }),
     };
 
-    const textStream = streamText({
-      model: workersai('@cf/meta/llama-3.3-70b-instruct-fp8-fast'),
-      messages: messages,
-      tools: availableTools,
-      maxSteps: 5, // Allow multiple tool calls in sequence
-    });
+    try {
+      const textStream = streamText({
+        model: workersai('@cf/meta/llama-3.3-70b-instruct-fp8-fast'),
+        messages: messages,
+        tools: availableTools,
+        maxSteps: 5, // Allow multiple tool calls in sequence
+        onFinish: async ({ text, finishReason, usage }) => {
+          console.log('Stream finished:', { text: text.substring(0, 100), finishReason, usage });
+        },
+      });
 
-    return textStream.toDataStreamResponse({
-      headers: {
-        // add these headers to ensure that the
-        // response is chunked and streamed
-        'Content-Type': 'text/x-unknown',
-        'content-encoding': 'identity',
-        'transfer-encoding': 'chunked',
-        'X-Session-Id': sessionId,
-      },
-    });
+      return textStream.toDataStreamResponse({
+        headers: {
+          // add these headers to ensure that the
+          // response is chunked and streamed
+          'Content-Type': 'text/x-unknown',
+          'content-encoding': 'identity',
+          'transfer-encoding': 'chunked',
+          'X-Session-Id': sessionId,
+        },
+      });
+    } catch (streamError: any) {
+      console.error('StreamText error:', streamError);
+      console.error('StreamText error details:', {
+        message: streamError?.message,
+        stack: streamError?.stack,
+        cause: streamError?.cause,
+        name: streamError?.name,
+      });
+      
+      // Return a more descriptive error
+      return new Response(
+        JSON.stringify({ 
+          error: 'Failed to create AI stream',
+          message: streamError?.message || 'Unknown streaming error',
+          details: process.env.NODE_ENV === 'development' ? streamError?.stack : undefined
+        }),
+        { 
+          status: 500,
+          headers: { 'Content-Type': 'application/json' }
+        }
+      );
+    }
   } catch (error: any) {
     console.error('Chat API error:', error);
+    console.error('Chat API error details:', {
+      message: error?.message,
+      stack: error?.stack,
+      cause: error?.cause,
+      name: error?.name,
+    });
     return new Response(
       JSON.stringify({ 
         error: error?.message || 'An error occurred while processing your request',
-        details: error?.stack 
+        details: error?.stack,
+        type: error?.name || 'UnknownError'
       }),
       { 
         status: 500,
