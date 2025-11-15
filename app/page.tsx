@@ -11,6 +11,12 @@ export default function Page() {
     api: '/api/chat',
     onError: (error) => {
       console.error('Chat error:', error);
+      console.error('Error details:', {
+        message: error?.message,
+        cause: error?.cause,
+        stack: error?.stack,
+        name: error?.name,
+      });
     },
   });
 
@@ -54,7 +60,18 @@ export default function Page() {
             {error && (
               <div className="p-4 m-4 bg-red-100 dark:bg-red-900 border border-red-400 dark:border-red-700 text-red-700 dark:text-red-300 rounded">
                 <p className="font-semibold">Error:</p>
-                <p>{error.message || 'An error occurred while processing your request. Make sure Workers AI is configured correctly.'}</p>
+                <p className="mb-2">
+                  {error.message || error?.toString() || 'An error occurred while processing your request.'}
+                </p>
+                <details className="mt-2 text-xs">
+                  <summary className="cursor-pointer underline">View technical details</summary>
+                  <pre className="mt-2 p-2 bg-red-50 dark:bg-red-950 rounded overflow-auto text-xs">
+                    {JSON.stringify(error, null, 2)}
+                  </pre>
+                </details>
+                <p className="text-xs mt-2">
+                  Check the browser console (F12) for more details. Make sure Workers AI binding is enabled in Cloudflare Pages dashboard.
+                </p>
               </div>
             )}
             {isLoading && (
