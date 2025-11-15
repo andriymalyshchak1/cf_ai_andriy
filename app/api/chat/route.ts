@@ -26,6 +26,10 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // Test the AI binding is accessible
+    console.log('AI binding type:', typeof context.env.AI);
+    console.log('AI binding available:', !!context.env.AI);
+
     // Save conversation to memory/state using KV
     // Using type assertion for optional bindings that may not be in CloudflareEnv type
     const envAny = context.env as any;
@@ -77,7 +81,24 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    const workersai = createWorkersAI({ binding: context.env.AI });
+    let workersai;
+    try {
+      workersai = createWorkersAI({ binding: context.env.AI });
+      console.log('WorkersAI provider created successfully');
+    } catch (aiError: any) {
+      console.error('Failed to create WorkersAI provider:', aiError);
+      return new Response(
+        JSON.stringify({ 
+          error: 'Failed to create AI provider',
+          message: aiError?.message || 'Unknown error',
+          details: aiError?.stack
+        }),
+        { 
+          status: 500,
+          headers: { 'Content-Type': 'application/json' }
+        }
+      );
+    }
 
     // Define tools for function calling
     const availableTools = {
