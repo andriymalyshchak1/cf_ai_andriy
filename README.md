@@ -141,14 +141,20 @@ pnpm run cf-typegen
    - Name it: `CHAT_SESSIONS`
    - Copy the namespace ID (looks like: `abc123def456...`)
 
-6. **Add environment variables and bindings** (in Page Settings > Functions):
+6. **Set Compatibility Flags** (CRITICAL - REQUIRED):
+   - Go to **Settings** > **Functions** > **Compatibility Flags**
+   - Under "Compatibility Flags", add: `nodejs_compat`
+   - Make sure it's enabled for both **Production** and **Preview** environments
+   - Save
+
+7. **Add environment variables and bindings** (in Page Settings > Functions):
    - **Workers AI Binding**: Enable Workers AI binding
    - **KV Namespace**: 
      - Click "Add binding"
      - Variable name: `CHAT_SESSIONS`
      - Select your `CHAT_SESSIONS` namespace
      - Save
-7. Save and deploy!
+8. Save and deploy!
 
 **Note**: The `workers` field has been removed from `wrangler.jsonc` as it's not supported in Pages configuration. The worker code in the `workers/` directory demonstrates the workflow/coordination component and can be deployed separately if needed.
 
