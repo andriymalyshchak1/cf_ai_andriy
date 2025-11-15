@@ -33,13 +33,27 @@ export async function GET(req: NextRequest) {
         ],
       });
 
+      // Workers AI returns a ReadableStream, so we need to read it
+      let responseText = '';
+      if (testResponse && typeof testResponse === 'object' && 'response' in testResponse) {
+        // If it has a response property, try to get it
+        const responseAny = testResponse as any;
+        responseText = responseAny.response || 'Stream received';
+      } else if (testResponse instanceof ReadableStream) {
+        // It's a stream - we'd need to read it, but for testing we'll just confirm it exists
+        responseText = 'ReadableStream received (stream format)';
+      } else {
+        responseText = JSON.stringify(testResponse).substring(0, 200);
+      }
+
       return new Response(
         JSON.stringify({ 
           success: true,
           aiBindingType: typeof context.env.AI,
           aiBindingAvailable: !!context.env.AI,
-          testResponse: testResponse.response || 'Response received',
+          testResponse: responseText,
           responseType: typeof testResponse,
+          isStream: testResponse instanceof ReadableStream,
         }),
         { 
           status: 200,
