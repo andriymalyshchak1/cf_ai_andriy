@@ -33,7 +33,7 @@ export class ChatMemory {
   }
 
   async saveMemory(request: Request): Promise<Response> {
-    const { sessionId, memory } = await request.json();
+    const { sessionId, memory } = await request.json() as { sessionId: string; memory: any };
     const key = `memory:${sessionId}`;
     
     await this.state.storage.put(key, {
@@ -64,7 +64,7 @@ export class ChatMemory {
   }
 
   async saveConversation(request: Request): Promise<Response> {
-    const { sessionId, messages } = await request.json();
+    const { sessionId, messages } = await request.json() as { sessionId: string; messages: any[] };
     const key = `conversation:${sessionId}`;
     
     await this.state.storage.put(key, {
