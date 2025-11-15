@@ -152,10 +152,13 @@ export async function POST(req: NextRequest) {
         },
         onError: async (error) => {
           console.error('StreamText onError callback:', error);
+          const errorObj = error?.error || error;
           console.error('StreamText onError details:', {
-            message: error?.message,
-            stack: error?.stack,
-            cause: error?.cause,
+            error: errorObj,
+            message: (errorObj as any)?.message,
+            stack: (errorObj as any)?.stack,
+            cause: (errorObj as any)?.cause,
+            type: typeof errorObj,
           });
         },
       });
