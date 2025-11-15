@@ -139,6 +139,9 @@ export async function POST(req: NextRequest) {
     };
 
     try {
+      console.log('Starting streamText with model:', '@cf/meta/llama-3.1-8b-instruct');
+      console.log('Messages count:', messages.length);
+      
       const textStream = streamText({
         model: workersai('@cf/meta/llama-3.1-8b-instruct'),
         messages: messages,
@@ -147,9 +150,19 @@ export async function POST(req: NextRequest) {
         onFinish: async ({ text, finishReason, usage }) => {
           console.log('Stream finished:', { text: text.substring(0, 100), finishReason, usage });
         },
+        onError: async (error) => {
+          console.error('StreamText onError callback:', error);
+          console.error('StreamText onError details:', {
+            message: error?.message,
+            stack: error?.stack,
+            cause: error?.cause,
+          });
+        },
       });
 
-      return textStream.toDataStreamResponse({
+      console.log('StreamText created, converting to response...');
+      
+      const response = textStream.toDataStreamResponse({
         headers: {
           // add these headers to ensure that the
           // response is chunked and streamed
@@ -159,6 +172,9 @@ export async function POST(req: NextRequest) {
           'X-Session-Id': sessionId,
         },
       });
+      
+      console.log('Response created successfully');
+      return response;
     } catch (streamError: any) {
       console.error('StreamText error:', streamError);
       console.error('StreamText error details:', {
