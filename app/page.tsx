@@ -16,7 +16,25 @@ export default function Page() {
         cause: error?.cause,
         stack: error?.stack,
         name: error?.name,
+        toString: error?.toString(),
+        valueOf: error?.valueOf?.(),
       });
+      
+      // Also log the full error object to see what we're working with
+      console.error('Full error object:', error);
+      
+      // Check if error has a response property
+      if ((error as any)?.response) {
+        console.error('Error response:', (error as any).response);
+      }
+    },
+    onResponse: async (response) => {
+      // Log successful responses
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('API returned error:', response.status, response.statusText);
+        console.error('Error response body:', errorText);
+      }
     },
   });
 
