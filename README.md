@@ -31,7 +31,7 @@ This project includes all required components:
    - Model: `@cf/meta/llama-3-8b-instruct` (widely available, proven to work)
    - Location: `app/api/chat/route.ts`
    - Provides AI-powered text generation
-   - Note: Using 3.1-8b instead of 3.3-70b for better availability and compatibility
+   - Note: Using 3-8b model which is confirmed working in test endpoint
 
 2. **Workflow/Coordination**
    - Chat Coordinator Worker: `workers/chat-coordinator.ts`
