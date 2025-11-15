@@ -31,33 +31,10 @@
 				"script_name": "chat-memory"
 			}
 		]
-	},
-	"workers": [
-		{
-			"name": "chat-coordinator",
-			"main": "./workers/chat-coordinator.ts",
-			"compatibility_date": "2025-05-20"
-		},
-		{
-			"name": "chat-memory",
-			"main": "./workers/chat-memory.ts",
-			"compatibility_date": "2025-05-20",
-			"durable_objects": {
-				"bindings": [
-					{
-						"name": "CHAT_MEMORY",
-						"class_name": "ChatMemory"
-					}
-				]
-			}
-		}
-	],
-	"services": [
-		{
-			"binding": "CHAT_COORDINATOR",
-			"service": "chat-coordinator"
-		}
-	]
+	}
+	// Note: For Cloudflare Pages, workers and services are configured separately
+	// The workers directory contains worker code that can be deployed independently
+	// Service bindings can be configured in the Cloudflare Pages dashboard
 	/**
 	 * Smart Placement
 	 * Docs: https://developers.cloudflare.com/workers/configuration/smart-placement/#smart-placement

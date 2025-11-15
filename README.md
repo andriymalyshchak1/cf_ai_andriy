@@ -123,18 +123,22 @@ pnpm run cf-typegen
 
 ### Option 1: Cloudflare Pages (Recommended)
 
-1. Fork this repository
+1. Fork this repository or push to your own repository with `cf_ai_` prefix
 2. Go to [Cloudflare Dashboard](https://dash.cloudflare.com/) > **Workers & Pages** > **Create Application** > **Pages**
-3. Connect your forked repository
-4. Configure build settings:
-   - Build command: `pnpm run pages:build`
-   - Build output directory: `.vercel/output/static`
-   - Root directory: (leave empty or set to root)
-5. Add environment variables and bindings:
-   - **Workers AI Binding**: Enable in Page Settings > Functions > Workers AI
-   - **KV Namespace**: Add `CHAT_SESSIONS` binding
-   - **Durable Objects**: Configure if using production DOs
-6. Deploy!
+3. Connect your repository
+4. **Configure build settings** (IMPORTANT):
+   - **Framework preset**: None (or Next.js if available)
+   - **Build command**: `pnpm install && pnpm run pages:build`
+   - **Build output directory**: `.vercel/output/static`
+   - **Root directory**: `/` (leave empty)
+   - **Node.js version**: 20.x or higher
+5. **Add environment variables and bindings** (in Page Settings > Functions):
+   - **Workers AI Binding**: Enable Workers AI binding
+   - **KV Namespace**: Add `CHAT_SESSIONS` binding (you'll need to create the namespace first)
+   - **Durable Objects**: Configure `CHAT_MEMORY` binding if using production DOs
+6. Save and deploy!
+
+**Note**: The `workers` field has been removed from `wrangler.jsonc` as it's not supported in Pages configuration. The worker code in the `workers/` directory demonstrates the workflow/coordination component and can be deployed separately if needed.
 
 ### Option 2: Manual Deployment
 
