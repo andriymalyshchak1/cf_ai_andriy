@@ -139,11 +139,11 @@ export async function POST(req: NextRequest) {
     };
 
     try {
-      console.log('Starting streamText with model:', '@cf/meta/llama-3.1-8b-instruct');
+      console.log('Starting streamText with model:', '@cf/meta/llama-3-8b-instruct');
       console.log('Messages count:', messages.length);
       
       const textStream = streamText({
-        model: workersai('@cf/meta/llama-3.1-8b-instruct'),
+        model: workersai('@cf/meta/llama-3-8b-instruct'),
         messages: messages,
         tools: availableTools,
         maxSteps: 5, // Allow multiple tool calls in sequence
