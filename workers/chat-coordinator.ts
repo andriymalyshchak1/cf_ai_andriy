@@ -80,7 +80,7 @@ async function handleSession(request: Request, env: CloudflareEnv): Promise<Resp
 
 async function handleCoordination(request: Request, env: CloudflareEnv): Promise<Response> {
   // Coordinate chat processing workflow
-  const body = await request.json();
+  const body = await request.json() as { sessionId?: string; messageCount?: number; action?: string };
   const { sessionId, messageCount, action } = body;
   
   // Use type assertion for optional bindings
