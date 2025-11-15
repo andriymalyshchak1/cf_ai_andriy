@@ -49,14 +49,6 @@ A chatbot application built on Cloudflare's platform using Workers AI, Pages, an
 
 4. Save and deploy
 
-## Features
-
-The chatbot can use tools for:
-- Math calculations (e.g., "What's 25 * 47?")
-- Date/time queries (e.g., "What time is it?")
-- Session statistics (e.g., "How many messages have we sent?")
-
-Conversations are saved to KV storage and persist across sessions.
 
 ## Project Structure
 
@@ -65,13 +57,7 @@ Conversations are saved to KV storage and persist across sessions.
 - `workers/` - Worker scripts for coordination
 - `lib/tools.ts` - Tool definitions for function calling
 
-## Troubleshooting
 
-**"AI binding is not available"**: Enable Workers AI in your Pages project settings under Functions.
-
-**Build fails**: Make sure the build command and output directory are set correctly in the Cloudflare Pages dashboard.
-
-**Storage errors**: Ensure your KV namespace is created and bound to your Pages project.
 
 ## Tech Stack
 
