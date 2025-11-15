@@ -32,7 +32,6 @@ A chatbot application built on Cloudflare's platform using Workers AI, Pages, an
 
 ### Deployment to Cloudflare Pages
 
-1. Push your code to a GitHub repo (must be prefixed with `cf_ai_`)
 
 2. In Cloudflare Dashboard:
    - Go to Workers & Pages > Create Application > Pages
