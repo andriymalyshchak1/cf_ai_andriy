@@ -16,13 +16,10 @@
 	"ai": {
 		"binding": "AI"
 	},
-	"kv_namespaces": [
-		{
-			"binding": "CHAT_SESSIONS",
-			"id": "chat_sessions_kv",
-			"preview_id": "chat_sessions_kv_preview"
-		}
-	]
+	// KV namespace bindings - must be configured in Cloudflare Pages dashboard
+	// The binding name is "CHAT_SESSIONS" - create KV namespace in dashboard and bind it
+	// Placeholder IDs removed - Pages deployment requires actual namespace IDs from dashboard
+	// See README.md for instructions on creating and binding KV namespaces
 	// Durable Objects binding removed for Pages deployment
 	// Note: For Pages, Durable Objects require the worker to be deployed separately first
 	// The memory/state component is satisfied by KV namespace (CHAT_SESSIONS) above

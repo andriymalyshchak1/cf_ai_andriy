@@ -136,10 +136,18 @@ pnpm run cf-typegen
    - **Root directory**: `/` (leave empty)
    - **Node.js version**: 20.x or higher
    - ⚠️ **The build command MUST be set in the dashboard - it cannot be auto-detected**
-5. **Add environment variables and bindings** (in Page Settings > Functions):
+5. **Create KV Namespace** (REQUIRED for memory/state):
+   - Go to **Workers & Pages** > **KV** > **Create a namespace**
+   - Name it: `CHAT_SESSIONS`
+   - Copy the namespace ID (looks like: `abc123def456...`)
+
+6. **Add environment variables and bindings** (in Page Settings > Functions):
    - **Workers AI Binding**: Enable Workers AI binding
-   - **KV Namespace**: Add `CHAT_SESSIONS` binding (you'll need to create the namespace first)
-   - **Durable Objects**: Configure `CHAT_MEMORY` binding if using production DOs
+   - **KV Namespace**: 
+     - Click "Add binding"
+     - Variable name: `CHAT_SESSIONS`
+     - Select your `CHAT_SESSIONS` namespace
+     - Save
 6. Save and deploy!
 
 **Note**: The `workers` field has been removed from `wrangler.jsonc` as it's not supported in Pages configuration. The worker code in the `workers/` directory demonstrates the workflow/coordination component and can be deployed separately if needed.
