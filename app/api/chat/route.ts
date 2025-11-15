@@ -1,0 +1,148 @@
+import { getRequestContext } from '@cloudflare/next-on-pages'
+
+export const runtime = 'edge'
+
+import { createWorkersAI } from 'workers-ai-provider';
+import { streamText, tool } from 'ai';
+import { NextRequest } from 'next/server';
+import { tools, executeTool } from '@/lib/tools';
+
+export async function POST(req: NextRequest) {
+  try {
+    const resJson: any = await req.json();
+    let messages: any = resJson["messages"];
+    const sessionId = resJson["sessionId"] || crypto.randomUUID();
+
+    const context = getRequestContext();
+    if (!context?.env?.AI) {
+      return new Response(
+        JSON.stringify({ 
+          error: 'AI binding is not available. Make sure Workers AI is configured in wrangler.jsonc and you have a Cloudflare account with Workers AI enabled.' 
+        }),
+        { 
+          status: 500,
+          headers: { 'Content-Type': 'application/json' }
+        }
+      );
+    }
+
+    // Save conversation to memory/state using KV
+    if (context.env.CHAT_SESSIONS) {
+      try {
+        await context.env.CHAT_SESSIONS.put(
+          `conversation:${sessionId}`,
+          JSON.stringify({
+            sessionId,
+            messages,
+            lastUpdated: Date.now(),
+          }),
+          { expirationTtl: 86400 } // 24 hours
+        );
+
+        // Update session activity
+        await context.env.CHAT_SESSIONS.put(
+          `session:${sessionId}`,
+          JSON.stringify({
+            id: sessionId,
+            lastActivity: Date.now(),
+            messageCount: messages.length,
+          }),
+          { expirationTtl: 86400 }
+        );
+      } catch (storageError) {
+        console.warn('Failed to save to storage:', storageError);
+        // Continue even if storage fails
+      }
+    }
+
+    // Coordinate workflow if service binding is available
+    if (context.env.CHAT_COORDINATOR) {
+      try {
+        await context.env.CHAT_COORDINATOR.fetch(
+          new Request(`${req.url.split('/api/chat')[0]}/api/chat/coordinate`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              sessionId,
+              messageCount: messages.length,
+              action: 'process_chat',
+            }),
+          })
+        );
+      } catch (coordError) {
+        console.warn('Coordination failed:', coordError);
+        // Continue even if coordination fails
+      }
+    }
+
+    const workersai = createWorkersAI({ binding: context.env.AI });
+
+    // Define tools for function calling
+    const availableTools = {
+      calculator: tool({
+        description: tools.calculator.description,
+        parameters: tools.calculator.parameters as any,
+        execute: async ({ expression }) => {
+          const result = await executeTool('calculator', { expression }, { sessionId, env: context.env });
+          if (result.error) {
+            return `Error: ${result.error}`;
+          }
+          return `Result: ${result.result}`;
+        },
+      }),
+      getCurrentDateTime: tool({
+        description: tools.getCurrentDateTime.description,
+        parameters: tools.getCurrentDateTime.parameters as any,
+        execute: async ({ timezone, format }) => {
+          const result = await executeTool('getCurrentDateTime', { timezone, format }, { sessionId, env: context.env });
+          if (result.error) {
+            return `Error: ${result.error}`;
+          }
+          return result.result;
+        },
+      }),
+      getSessionStats: tool({
+        description: tools.getSessionStats.description,
+        parameters: tools.getSessionStats.parameters as any,
+        execute: async ({ sessionId: toolSessionId }) => {
+          const targetSessionId = toolSessionId || sessionId;
+          const result = await executeTool('getSessionStats', { sessionId: targetSessionId }, { sessionId: targetSessionId, env: context.env });
+          if (result.error) {
+            return `Error: ${result.error}`;
+          }
+          return result.result;
+        },
+      }),
+    };
+
+    const textStream = streamText({
+      model: workersai('@cf/meta/llama-3.3-70b-instruct-fp8-fast'),
+      messages: messages,
+      tools: availableTools,
+      maxSteps: 5, // Allow multiple tool calls in sequence
+    });
+
+    return textStream.toDataStreamResponse({
+      headers: {
+        // add these headers to ensure that the
+        // response is chunked and streamed
+        'Content-Type': 'text/x-unknown',
+        'content-encoding': 'identity',
+        'transfer-encoding': 'chunked',
+        'X-Session-Id': sessionId,
+      },
+    });
+  } catch (error: any) {
+    console.error('Chat API error:', error);
+    return new Response(
+      JSON.stringify({ 
+        error: error?.message || 'An error occurred while processing your request',
+        details: error?.stack 
+      }),
+      { 
+        status: 500,
+        headers: { 'Content-Type': 'application/json' }
+      }
+    );
+  }
+}
