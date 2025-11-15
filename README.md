@@ -148,7 +148,7 @@ pnpm run cf-typegen
      - Variable name: `CHAT_SESSIONS`
      - Select your `CHAT_SESSIONS` namespace
      - Save
-6. Save and deploy!
+7. Save and deploy!
 
 **Note**: The `workers` field has been removed from `wrangler.jsonc` as it's not supported in Pages configuration. The worker code in the `workers/` directory demonstrates the workflow/coordination component and can be deployed separately if needed.
 
