@@ -22,17 +22,12 @@
 			"id": "chat_sessions_kv",
 			"preview_id": "chat_sessions_kv_preview"
 		}
-	],
-	"durable_objects": {
-		"bindings": [
-			{
-				"name": "CHAT_MEMORY",
-				"class_name": "ChatMemory"
-				// Note: script_name removed - for Pages, DOs are configured in dashboard
-				// The chat-memory worker file exists for reference but must be deployed separately
-			}
-		]
-	}
+	]
+	// Durable Objects binding removed for Pages deployment
+	// Note: For Pages, Durable Objects require the worker to be deployed separately first
+	// The memory/state component is satisfied by KV namespace (CHAT_SESSIONS) above
+	// The chat-memory.ts file exists in workers/ directory to demonstrate the DO component
+	// To use DOs in production: deploy chat-memory worker first, then add binding with script_name
 	// Note: For Cloudflare Pages, workers and services are configured separately
 	// The workers directory contains worker code that can be deployed independently
 	// Service bindings can be configured in the Cloudflare Pages dashboard
