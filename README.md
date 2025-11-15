@@ -147,14 +147,21 @@ pnpm run cf-typegen
    - Make sure it's enabled for both **Production** and **Preview** environments
    - Save
 
-7. **Add environment variables and bindings** (in Page Settings > Functions):
-   - **Workers AI Binding**: Enable Workers AI binding
-   - **KV Namespace**: 
-     - Click "Add binding"
-     - Variable name: `CHAT_SESSIONS`
-     - Select your `CHAT_SESSIONS` namespace
-     - Save
-8. Save and deploy!
+7. **Enable Workers AI Binding** (CRITICAL - REQUIRED for AI features):
+   - Go to **Settings** > **Functions** 
+   - Scroll down to **Workers AI** section
+   - Toggle **"Workers AI"** to **ON** or click **"Add binding"**
+   - This enables the AI binding for your Pages functions
+   - Save
+
+8. **Add KV Namespace binding** (in Page Settings > Functions):
+   - Scroll to **KV namespace bindings** section
+   - Click **"Add binding"**
+   - **Variable name**: `CHAT_SESSIONS`
+   - **KV namespace**: Select your `CHAT_SESSIONS` namespace (created in step 5)
+   - Click **Save**
+
+9. Save all settings and redeploy or wait for next deployment!
 
 **Note**: The `workers` field has been removed from `wrangler.jsonc` as it's not supported in Pages configuration. The worker code in the `workers/` directory demonstrates the workflow/coordination component and can be deployed separately if needed.
 
@@ -276,9 +283,14 @@ The chatbot includes the following tools that extend its capabilities:
 ## Troubleshooting
 
 ### "AI binding is not available" error
-- Ensure you're logged in: `npx wrangler login`
-- Verify Workers AI is enabled in your Cloudflare account
-- Check `wrangler.jsonc` has AI binding configured
+- **Enable Workers AI binding in Cloudflare Pages dashboard**:
+  1. Go to your Pages project > **Settings** > **Functions**
+  2. Scroll to **Workers AI** section
+  3. Toggle **"Workers AI"** to **ON** or click **"Add binding"**
+  4. Save and redeploy
+- Verify Workers AI is enabled in your Cloudflare account (should be on by default)
+- For local development: Ensure you're logged in: `npx wrangler login`
+- Check `wrangler.jsonc` has AI binding configured (it does: `"ai": { "binding": "AI" }`)
 
 ### Storage errors
 - For local dev, KV and Durable Objects work in preview mode
