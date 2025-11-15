@@ -126,12 +126,16 @@ pnpm run cf-typegen
 1. Fork this repository or push to your own repository with `cf_ai_` prefix
 2. Go to [Cloudflare Dashboard](https://dash.cloudflare.com/) > **Workers & Pages** > **Create Application** > **Pages**
 3. Connect your repository
-4. **Configure build settings** (IMPORTANT):
+4. **Configure build settings** (IMPORTANT - REQUIRED IN DASHBOARD):
+   - Navigate to: **Settings** > **Builds & deployments** > **Edit configuration**
    - **Framework preset**: None (or Next.js if available)
    - **Build command**: `pnpm install && pnpm run pages:build`
+     - If pnpm fails, try: `corepack enable && pnpm install && pnpm run pages:build`
+     - Or use npm: `npm install && npm run pages:build`
    - **Build output directory**: `.vercel/output/static`
    - **Root directory**: `/` (leave empty)
    - **Node.js version**: 20.x or higher
+   - ⚠️ **The build command MUST be set in the dashboard - it cannot be auto-detected**
 5. **Add environment variables and bindings** (in Page Settings > Functions):
    - **Workers AI Binding**: Enable Workers AI binding
    - **KV Namespace**: Add `CHAT_SESSIONS` binding (you'll need to create the namespace first)
